@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+
+#### virtualenv-commands
+#### Extend the Current Environment
+
+### Parts Copyright (c) 2009, Coptix, Inc.  All rights reserved.
+### See the LICENSE file for license terms and warranty disclaimer.
+
+"""Extend the current virtualenv with the source virtualenvs.
+
+Extending a virtual environment means "chaining" it to some other
+source environments.  Anything in the destination virtualenv overrides
+source virtualenvs.  The effect of extending one virtualenv with
+another is to append the source virtualenv site-packages to the
+sys.path of the destination virtualenv.
+"""
+
+from __future__ import absolute_import
+import sys, os, vecmd
+from vecmd import script
+
+
+def main(*args, **options):
+    sources = map(vecmd.resolve_ve_path, args)
+
+    dest = vecmd.current_virtualenv()
+    if dest is None:
+        print 'Not in a virtual env'
+        sys.exit(1)
+
+    if len(sources) == 0:
+        show_extensions(dest)
+        return 0
+
+    if options.get('append'):
+        old_extends = vecmd.extends(dest)
+        new_extends = set(sources).difference(set(old_extends))
+        sources = old_extends + list(new_extends)
+    
+    vecmd.write_extensions(dest, sources)
+    print 'Done modifying "%s".' % dest
+    if options.get('verbose'):
+        print 'sys.path = ', vecmd.sys_path(dest)
+
+        
+def show_extensions(ve):
+    extends = vecmd.extends(ve)
+    if len(extends) == 0:
+        print '"%s" does not inherit from any other virtualenvs.' % ve
+    else:
+        print '"%s" extends:' % ve
+        for ext in vecmd.extends(ve):
+            print '  ', ext
+
+            
+if __name__ == '__main__':
+    vecmd.begin(
+        main,
+        require=0,
+        usage="usage: %prog source ...",
+        description=__doc__,
+        options=(
+            vecmd.option('-r', '--replace', action='store_false', dest='append', default=True,
+                         help='overwrite current extensions'),
+            vecmd.option('-v', '--verbose', action='store_true',
+                         help='show verbose output')
+        ))
