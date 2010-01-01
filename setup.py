@@ -19,7 +19,8 @@ setup(
 
     packages = list(find_packages(exclude=('tests', 'docs', 'docs.*'))),
     install_requires = 'virtualenv',
-    scripts = ['bin/ve', 'bin/ve-extend', 'bin/ve-clone', 'bin/ve-init'],
+    scripts = ['bin/ve', 'bin/ve-extend', 'bin/ve-clone',
+               'bin/ve-init', 'bin/ve-inherit'],
 
     classifiers = [
         'Development Status :: 3 - Alpha',
