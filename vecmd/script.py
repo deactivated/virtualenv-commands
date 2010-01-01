@@ -7,7 +7,7 @@
 """script -- Utilities for writing scripts."""
 
 from __future__ import absolute_import
-import os, sys, subprocess, tempfile, contextlib, optparse, inspect
+import sys, subprocess, tempfile, contextlib, optparse, inspect
 
 
 ### Options and script execution
