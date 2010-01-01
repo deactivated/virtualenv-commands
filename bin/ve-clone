@@ -18,7 +18,9 @@ import sys, os, vecmd
 from vecmd import script
 
 def main(source, dest, **options):
-
+    source = vecmd.resolve_ve_path(source)
+    dest = vecmd.resolve_ve_path(dest)
+    
     if not options.get('force') and not confirm_existing(dest):
         print 'Nothing modified.'
         return 0

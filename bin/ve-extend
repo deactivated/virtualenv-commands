@@ -19,7 +19,9 @@ from __future__ import absolute_import
 import sys, os, vecmd
 from vecmd import script
 
+
 def main(*args, **options):
+    args = map(vecmd.resolve_ve_path, args)
     source = args[0:-1]; dest = args[-1]
 
     if not os.path.exists(dest):

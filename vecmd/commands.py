@@ -11,17 +11,38 @@ import os, re, contextlib
 from . import script
 
 __all__ = (
-    'is_virtualenv', 'interpreter',
+    'workon_dir', 'resolve_ve_path',
+    
+    'current_virtualenv', 'is_virtualenv', 'interpreter',
     'version', 'site_packages', 'sys_path',
-    'create',
-    'virtualenv', 'python',
+
+    'create', 'virtualenv', 'python',
 
     'has_extensions', 'extends_path', 'extends', 'write_extensions',
     'clone'
 )
 
 
+### virtualenvwrapper integration
+def workon_dir():
+    if "WORKON_HOME" in os.environ:
+        wd = os.environ["WORKON_HOME"]
+    else:
+        wd = os.path.join(os.environ["HOME"], ".virtualenvs")
+    return os.path.abspath(wd)
+
+def resolve_ve_path(path):
+    if len(path) > 0 and path[0] in (".", "/"):
+        return os.path.abspath(path)
+    wd = workon_dir()
+    return os.path.join(wd, path)
+
+
 ### Inspection
+
+def current_virtualenv():
+    """Return path to the current virtualenv or None if not in one"""
+    return os.environ.get("VIRTUAL_ENV", None)
 
 def is_virtualenv(ve):
     """Return True if the path ve exists and looks like a
