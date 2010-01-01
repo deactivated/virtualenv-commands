@@ -141,16 +141,4 @@ def python(*args):
     return must(current_python_interpreter(), *args)
 
 def current_python_interpreter():
-    ## Note: This is kludge; what's a better way to find the "current"
-    ## python interpreter?
-
-    ## If this script is being executed directly, use which() to find
-    ## the python interpreter.  Otherwise, assume the script is being
-    ## run through a python interpreter directly; look for the
-    ## interpreter in the environment.
-
-    path = os.environ['_']
-    if os.path.basename(path).startswith('python'):
-        return path
-    else:
-        return which('python')
+    return sys.executable
