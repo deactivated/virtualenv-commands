@@ -31,26 +31,35 @@ def main(*args, **options):
             print '%r does not exist.  Are you missing a --create option?' % dest
             sys.exit(1)
 
-    if not options.get('force') and not confirm_existing(dest):
+    if (not options.get('force') and not options.get('append')
+        and not confirm_existing(dest)):
         print 'Nothing modified.'
         return 0
 
+    if options.get('append'):
+        old_extends = vecmd.extends(dest)
+        new_extends = set(source).difference(set(old_extends))
+        source = old_extends + list(new_extends)
+    
     vecmd.write_extensions(dest, source)
     print 'Done modifying "%s".' % dest
     if options.get('verbose'):
         print 'sys.path = ', vecmd.sys_path(dest)
 
+        
 def confirm_existing(ve):
     if vecmd.has_extensions(ve):
         show_extensions(ve)
         return script.confirm('Overwrite?')
     return True
 
+
 def show_extensions(ve):
     print '"%s" already extends:' % ve
     for ext in vecmd.extends(ve):
         print '  ', ext
 
+        
 if __name__ == '__main__':
     vecmd.begin(
         main,
@@ -58,6 +67,7 @@ if __name__ == '__main__':
         usage="usage: %prog source ... destination",
         description=__doc__,
         options=(
+            vecmd.option('-a', '--append', action='store_true', help='add sources to destination rather than replacing them'),
             vecmd.option('-c', '--create', action='store_true', help='create the destination virtualenv if it does not exist'),
             vecmd.option('-f', '--force', action='store_true', help="don't prompt to overwrite existing extensions"),
             vecmd.option('-v', '--verbose', action='store_true', help='show verbose output')
