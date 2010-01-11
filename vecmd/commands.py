@@ -107,7 +107,7 @@ def python(ve, command):
 ## site.addsitedir() recursively expands the directory (processes any
 ## `.pth' files, runs its sitecustomize.py, etc).
 
-EXTENDS = 'sitecustomize.py'
+EXTENDS = 've_extends.pth'
 
 def has_extensions(ve):
     return is_virtualenv(ve) and os.path.exists(extends_path(ve))
@@ -123,16 +123,15 @@ def extends(ve):
 
 def write_extensions(ve, extends):
     with extensions_file(ve, 'w') as port:
-        print >> port, 'import site'
         for source_ve in extends:
             print >> port, _ve_to_extension(source_ve)
 
 def _ve_to_extension(ve):
-    return 'site.addsitedir("%s")' % os.path.abspath(site_packages(ve))
+    return 'import site; site.addsitedir("%s")' % os.path.abspath(site_packages(ve))
 
 _EXTENSION = re.compile('site\.addsitedir\("([^"]+)"\)')
 def _extension_to_ve(ext):
-    match = _EXTENSION.match(ext)
+    match = _EXTENSION.search(ext)
     return match and without_site_packages(match.group(1))
 
 def extensions_file(ve, *args):
